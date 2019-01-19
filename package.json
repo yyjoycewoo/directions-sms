@@ -9,7 +9,12 @@
   "dependencies": {
     "expo": "^32.0.0",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz"
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-android-sms-listener": "^0.5.0",
+    "react-native-communications": "^2.2.1",
+    "react-native-sms": "^1.8.0",
+    "react-native-sms-android": "^0.4.1",
+    "react-native-sms-x": "^1.0.6"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
