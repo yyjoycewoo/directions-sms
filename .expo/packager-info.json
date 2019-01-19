@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 5625,
-  "expoServerNgrokUrl": "https://jw-yqb.anonymous.directions-sms.exp.direct",
-  "packagerNgrokUrl": "https://packager.jw-yqb.anonymous.directions-sms.exp.direct",
-  "ngrokPid": 5642
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null
 }
