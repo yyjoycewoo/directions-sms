@@ -14,7 +14,8 @@ export default class App extends React.Component {
     };
   }
 
-  getLocation = () => {
+  getLocation = async() => {
+  
     navigator.geolocation.getCurrentPosition(
       (position) => {
         this.setState({
@@ -29,11 +30,11 @@ export default class App extends React.Component {
   }
 
   createMessage = () => {
-    this.getLocation()
+    const location = this.getLocation()
+    console.log(location)
 
     async function waitForPromise() {
-      // let result = await any Promise, like:
-      let result = await Promise.resolve('this is a sample promise');
+      await location
     }
 
     waitForPromise()
@@ -49,7 +50,6 @@ export default class App extends React.Component {
         return Linking.openURL(url)
       }
     }).catch(err => console.error('An error occurred', err))
-
 
     console.log(this.state)
   }
