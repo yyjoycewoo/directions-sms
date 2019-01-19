@@ -7,26 +7,14 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      text: 'Where do you want to go?',
+      text: 'Where',
       latitude: null,
       longitude: null,
       error: null
     };
   }
 
-  createMessage = () => {
-    // console.log(this.state.text)
-    const url = (Platform.OS === 'android')
-    ? `sms:16473763108?body=${this.state.text}`
-    : `sms:16473763108&body=${this.state.text}`
-    Linking.canOpenURL(url).then(supported => {
-      if (!supported) {
-        console.log('Unsupported url: ' + url)
-      } else {
-        return Linking.openURL(url)
-      }
-    }).catch(err => console.error('An error occurred', err))
-
+  getLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         this.setState({
@@ -35,9 +23,33 @@ export default class App extends React.Component {
           error: 'success',
         });
       },
-      (error) => this.setState({ error: 'errored'/*error.message*/ }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
+  }
+
+  createMessage = () => {
+    this.getLocation()
+
+    async function waitForPromise() {
+      // let result = await any Promise, like:
+      let result = await Promise.resolve('this is a sample promise');
+    }
+
+    waitForPromise()
+    
+    const body = `Getting you to ${this.state.text} from ${this.state.longitude}, ${this.state.latitude}`
+    const url = (Platform.OS === 'android')
+    ? `sms:17053006844?body=${body}`
+    : `sms:17053006844&body=${body}`
+    Linking.canOpenURL(url).then(supported => {
+      if (!supported) {
+        console.log('Unsupported url: ' + url)
+      } else {
+        return Linking.openURL(url)
+      }
+    }).catch(err => console.error('An error occurred', err))
+
 
     console.log(this.state)
   }
