@@ -7,12 +7,19 @@ import Button from 'apsl-react-native-button'
 export default class App extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = { 
       text: '',
       latitude: null,
       longitude: null,
-      error: null
+      error: null,
+      invalidText: ''
     };
+  }
+  focusTextInput = () => {
+    // Explicitly focus the text input using the raw DOM API
+    // Note: we're accessing "current" to get the DOM node
+    this.textInput.current.focus();
   }
 
   getLocation = async() => {
@@ -31,46 +38,52 @@ export default class App extends React.Component {
   }
 
   createMessage = () => {
-    const location = this.getLocation()
-    console.log(location)
+    if (this.state.text === '') {
+      this.setState({invalidText: 'Please double check your destination'})
+    } else {
+      const location = this.getLocation()
+      console.log(location)
 
-    async function waitForPromise() {
-      await location
-    }
-
-    waitForPromise()
-    
-    const body = `Getting you to ${this.state.text} from ${this.state.longitude}, ${this.state.latitude}`
-    const url = (Platform.OS === 'android')
-    ? `sms:17053006844?body=${body}`
-    : `sms:17053006844&body=${body}`
-    Linking.canOpenURL(url).then(supported => {
-      if (!supported) {
-        console.log('Unsupported url: ' + url)
-      } else {
-        return Linking.openURL(url)
+      async function waitForPromise() {
+        await location
       }
-    }).catch(err => console.error('An error occurred', err))
 
-    console.log(this.state)
+      waitForPromise()
+      
+      const body = `Getting you to ${this.state.text} from ${this.state.latitude}, ${this.state.longitude}`
+      const url = (Platform.OS === 'android')
+      ? `sms:17053006844?body=${body}`
+      : `sms:17053006844&body=${body}`
+      Linking.canOpenURL(url).then(supported => {
+        if (!supported) {
+          console.log('Unsupported url: ' + url)
+        } else {
+          return Linking.openURL(url)
+        }
+      }).catch(err => console.error('An error occurred', err))
+
+      console.log(this.state)
+    }
   }
 
   render() {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled> 
         <View style = {{flex: 1, justifyContent: 'center'}}>
-
           <Text style= {{fontSize: 28}}>
             DIRECTIONS SMS
           </Text>
         </View>
         <View style = {{flex: 1}}>
+        <Text style = {{marginLeft: 10, marginRight: 10, color: 'red'}}>
+          {this.state.invalidText} 
+        </Text>
         <TextInput
           style={styles.textbox}
           placeholder="Where are you going?"
           onChangeText={(text) => this.setState({text})}
           value={this.state.text}
-          onSubmitEditing= { this.createMessage}
+          onSubmitEditing={this.createMessage}
         />
         
         <Button
