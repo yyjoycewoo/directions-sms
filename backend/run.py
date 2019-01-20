@@ -3,6 +3,15 @@ from html.parser import HTMLParser
 import requests, os, asyncio
 from twilio.twiml.messaging_response import MessagingResponse
 
+from twilio.rest import Client
+import os
+
+# Your Account Sid and Auth Token from twilio.com/console
+account_sid = os.environ['TWILIOASID']
+auth_token = os.environ['TWILIOATOKEN']
+client = Client(account_sid, auth_token)
+
+
 app = Flask(__name__)
 gKey = os.environ['GMAPTOKEN'] #google api key
 #HTML Stripper
@@ -26,16 +35,61 @@ def strip_tags(html):
 def sms_ahoy_reply():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
+
+    # Add a message
+    body = request.args.get('Body')
+    body=body.split()
+    number=body[0]
+    longLat = body[-1]
+    dest=body[3:len(body)-2]
+    destination="+".join(dest)
+
+
+    message = client.messages \
+                    .create(
+                         body=body[1:],
+                         from_='+17053006844',
+                         to=number
+                     )
+    return
+
+
+@app.route("/stdlib", methods=['POST'])
+def sms_stdlib():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
+
+    # Add a message
+    body = request.json
+    incoming = body['msg'];
+    reply=""
+    if incoming=="Get me directions":
+        reply=getRespfromGoogle()
+    # extra if conditions 
+    message = client.messages \
+                    .create(
+                         body=reply,
+                         from_='+17053006844',
+                         to=body['number']
+                     )
+    return 'done'
+
+def sms_direction_reply():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
     resp = MessagingResponse()
 
     # Add a message
     body = request.args.get('Body')
     body=body.split()
+    number=body[0]
     longLat = body[-1]
     dest=body[3:len(body)-2]
     destination="+".join(dest)
-    resp.message(getRespfromGoogle(origin=longLat,destination=destination))
+    resp.message(getRespfromGoogle(origin,destination))
     return str(resp)
+
+
 
 def getRespfromGoogle(origin = "bahen+uoft", destination = "hart+house", travelType = "walking"):
     #Using Google maps API to retreive directions from origin to destination
