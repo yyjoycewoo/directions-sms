@@ -1,6 +1,8 @@
 from flask import Flask, request
 from html.parser import HTMLParser
-import requests, os, asyncio
+import requests, os, asyncio, time, pytz
+from datetime import datetime
+
 from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
@@ -23,7 +25,7 @@ def strip_tags(html):
 
 #Routes
 @app.route("/sms", methods=['GET', 'POST'])
-def run_after_GET():
+def sms_ahoy_reply():
     return sms_ahoy_reply()
 
 # 1600 char limit
@@ -34,7 +36,7 @@ def sms_ahoy_reply():
 
     # Add a message
     body = request.args.get('Body')
-    body=body.split()
+    body = body.split()
     longLat = body[-1]
     if 'take' in body:
       #route api to find directions
@@ -50,9 +52,31 @@ def sms_ahoy_reply():
       resp.message("It's currently -15C.")
     elif 'time' in body:
       #timezone api
-      resp.message("It's current 3:43pm")
+      #eg. What time is it in 43.659624,-79.39849007
+      resp.message(getTimeFromGoogle(origin=longLat))
     
     return str(resp)
+
+def getTimeFromGoogle(origin='43.659624,-79.39849007'):
+  url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+origin
+  #38.908133,-77.047119
+  url += '&timestamp=' + str(round(time.time()))
+  url += '&key='+gKey
+  req = requests.get(url)
+  if req.status_code!=200: #if response was unsucessful
+    return ["error"]
+
+  timeJson = req.json()
+
+  ret = "You are in " + timeJson['timeZoneName'] + ". It is now "
+  tz = datetime.now(pytz.timezone(timeJson['timeZoneId']))
+  time_now = tz.time()
+  date_now = tz.date()
+  ret += str(time_now.hour) + ':' + str(time_now.minute)
+  ret += " on "
+  ret += str(date_now)
+
+  return ret
 
 def getRespfromGoogle(origin = "bahen+uoft", destination = "hart+house", travelType = "walking"):
     #Using Google maps API to retreive directions from origin to destination
