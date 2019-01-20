@@ -11,6 +11,7 @@ import os
 # Your Account Sid and Auth Token from twilio.com/console
 account_sid = os.environ['TWILIOASID']
 auth_token = os.environ['TWILIOATOKEN']
+twilnumber = os.environ['NUMBER']
 client = Client(account_sid, auth_token)
 
 
@@ -33,53 +34,8 @@ def strip_tags(html):
     return s.get_data()
 
 #Routes
+#DEFAULT TWILIO
 @app.route("/sms", methods=['GET', 'POST'])
-def sms_ahoy_reply():
-    return sms_ahoy_reply()
-
-# 1600 char limit
-def sms_ahoy_reply():
-    """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-
-    # Add a message
-    body = request.args.get('Body')
-    body=body.split()
-    number=body[0]
-    longLat = body[-1]
-    dest=body[3:len(body)-2]
-    destination="+".join(dest)
-
-
-    message = client.messages \
-                    .create(
-                         body=body[1:],
-                         from_='+17053006844',
-                         to=number
-                     )
-    return
-
-
-@app.route("/stdlib", methods=['POST'])
-def sms_stdlib():
-    """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-
-    # Add a message
-    body = request.json
-    incoming = body['msg'];
-    reply=""
-    if incoming=="Get me directions":
-        reply=getRespfromGoogle()
-    # extra if conditions
-    message = client.messages \
-                    .create(
-                         body=reply,
-                         from_='+17053006844',
-                         to=body['number']
-                     )
-    return 'done'
-
 def sms_direction_reply():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
@@ -103,15 +59,35 @@ def sms_direction_reply():
       resp.message("It's currently -15C.")
     elif 'time' in body:
       #timezone api
-<<<<<<< HEAD
       #eg. What time is it in 43.659624,-79.39849007
       resp.message(getTimeFromGoogle(origin=longLat))
-    
-=======
-      resp.message("It's current 3:43pm")
-
->>>>>>> f4670ef5dba3826baff9a80f30bf67ce1fc932db
     return str(resp)
+
+
+
+# 1600 char limit
+
+
+@app.route("/stdlib", methods=['POST'])
+def sms_stdlib():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
+
+    # Add a message
+    body = request.json
+    incoming = body['msg'];
+    reply=""
+    if incoming=="Get me directions":
+        reply=getRespfromGoogle()
+    # extra if conditions
+    message = client.messages \
+                    .create(
+                         body=reply,
+                         from_=twilnumber,
+                         to=body['number']
+                     )
+    return 'done'
+
 
 def getTimeFromGoogle(origin='43.659624,-79.39849007'):
   url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+origin
