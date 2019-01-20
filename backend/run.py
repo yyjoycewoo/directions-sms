@@ -1,7 +1,19 @@
 from flask import Flask, request
 from html.parser import HTMLParser
-import requests, os, asyncio
+import requests, os, asyncio, time, pytz
+from datetime import datetime
+
 from twilio.twiml.messaging_response import MessagingResponse
+
+from twilio.rest import Client
+import os
+
+# Your Account Sid and Auth Token from twilio.com/console
+account_sid = os.environ['TWILIOASID']
+auth_token = os.environ['TWILIOATOKEN']
+twilnumber = os.environ['NUMBER']
+client = Client(account_sid, auth_token)
+
 
 app = Flask(__name__)
 
@@ -23,27 +35,26 @@ def strip_tags(html):
     return s.get_data()
 
 #Routes
+#DEFAULT TWILIO
 @app.route("/sms", methods=['GET', 'POST'])
-def run_after_GET():
-    return sms_ahoy_reply()
-
-# 1600 char limit
-def sms_ahoy_reply():
+def sms_direction_reply():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
     resp = MessagingResponse()
 
     # Add a message
     body = request.args.get('Body')
-    if 'Take me to' in body:
-      body=body.split()
-      longLat = body[-1]
+    body = body.split()
+    longLat = body[-1]
+    if 'take' in body:
+      #route api to find directions
+      #eg. Take me to Eaton Center from 43.659624,-79.39849007
       dest=body[3:len(body)-2]
       destination="+".join(dest)
       resp.message(getRespfromGoogle(origin=longLat,destination=destination))
-    elif 'where am' in  body:
+    elif 'where' in body:
       #geocoding api
-      resp.message('you are currently in Toronto, ON')
+      resp.message(getLocation(origin=longLat))
     elif "weather" in body:
       #weather api
       weather = getWeather()
@@ -51,7 +62,11 @@ def sms_ahoy_reply():
     elif 'time in body':
       #timezone api
       resp.message("It's current 3:43pm")
-
+      resp.message("It's currently -15C.")
+    elif 'time' in body:
+      #timezone api
+      #eg. What time is it in 43.659624,-79.39849007
+      resp.message(getTimeFromGoogle(origin=longLat))
     return str(resp)
 def getWeather():
     key = "0864784f871251ec16fe836de0ea3352"
@@ -63,6 +78,53 @@ def getWeather():
     msg = "The temperature is " + str(temp["currently"]["temperature"]) + " Fahrenheit. \n"
     msg+= temp["hourly"]["summary"]
     resp.message(msg)
+
+
+
+# 1600 char limit
+
+
+@app.route("/stdlib", methods=['POST'])
+def sms_stdlib():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
+
+    # Add a message
+    body = request.json
+    incoming = body['msg'];
+    reply=""
+    if incoming=="Get me directions":
+        reply=getRespfromGoogle()
+    # extra if conditions
+    message = client.messages \
+                    .create(
+                         body=reply,
+                         from_=twilnumber,
+                         to=body['number']
+                     )
+    return 'done'
+
+
+def getTimeFromGoogle(origin='43.659624,-79.39849007'):
+  url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+origin
+  #38.908133,-77.047119
+  url += '&timestamp=' + str(round(time.time()))
+  url += '&key='+gKey
+  req = requests.get(url)
+  if req.status_code!=200: #if response was unsucessful
+    return ["error"]
+
+  timeJson = req.json()
+
+  ret = "You are in " + timeJson['timeZoneName'] + ". It is now "
+  tz = datetime.now(pytz.timezone(timeJson['timeZoneId']))
+  time_now = tz.time()
+  date_now = tz.date()
+  ret += str(time_now.hour) + ':' + str(time_now.minute)
+  ret += " on "
+  ret += str(date_now)
+
+  return ret
 
 def getRespfromGoogle(origin = "bahen+uoft", destination = "hart+house", travelType = "walking"):
     #Using Google maps API to retreive directions from origin to destination
@@ -97,3 +159,20 @@ def getRespfromGoogle(origin = "bahen+uoft", destination = "hart+house", travelT
         steps+= step
 
     return steps
+
+def getLocation (origin = "40.714224,-73.961452"):
+    location = "" #our string to request from Google maps
+    location += "https://maps.googleapis.com/maps/api/geocode/json?"
+    location += "latlng=" + origin
+    location += "&key=" + gKey
+    req = requests.get(location)
+
+    if req.status_code!=200: #if response was unsucessful
+        return ["error"]
+
+    locationJson = req.json()
+    general = locationJson['plus_code']
+    cityUncleaned = general['compound_code']
+    city = cityUncleaned[8:]
+    message = "You are currently in " + city
+    return message
