@@ -4,7 +4,7 @@ import requests, os, asyncio
 from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
-gKey = os.environ['GMAPTOKEN'] #google api key
+gKey = "AIzaSyD1jYzlx7cfOlWWqNhu8MMFuv-IfF2QDI0" #google api key
 #HTML Stripper
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -42,7 +42,7 @@ def sms_ahoy_reply():
       resp.message(getRespfromGoogle(origin=longLat,destination=destination))
     elif 'where am' in  body:
       #geocoding api
-      resp.message('you are currently in Toronto, ON')
+      resp.message(getLocation(origin=longLat))
     elif "weather" in body:
       #weather api
       resp.message("It's currently -15C.")
@@ -85,3 +85,21 @@ def getRespfromGoogle(origin = "bahen+uoft", destination = "hart+house", travelT
         steps+= step
 
     return steps
+
+def getLocation (origin = "40.714224,-73.961452"):
+    location = "" #our string to request from Google maps
+    location += "https://maps.googleapis.com/maps/api/geocode/json?"
+    location += "latlng=" + origin
+    location += "&key=" + gKey
+    req = requests.get(location)
+
+    if req.status_code!=200: #if response was unsucessful
+        return ["error"]
+
+    locationJson = req.json()
+    general = locationJson['plus_code']
+    cityUncleaned = general['compound_code']
+    city = cityUncleaned[8:]
+    message = "You are currently in " + city
+    return message
+
