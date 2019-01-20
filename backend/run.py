@@ -13,7 +13,6 @@ account_sid = os.environ['TWILIOASID']
 auth_token = os.environ['TWILIOATOKEN']
 client = Client(account_sid, auth_token)
 
-
 app = Flask(__name__)
 gKey = os.environ['GMAPTOKEN'] #google api key
 #HTML Stripper
@@ -103,14 +102,9 @@ def sms_direction_reply():
       resp.message("It's currently -15C.")
     elif 'time' in body:
       #timezone api
-<<<<<<< HEAD
       #eg. What time is it in 43.659624,-79.39849007
       resp.message(getTimeFromGoogle(origin=longLat))
     
-=======
-      resp.message("It's current 3:43pm")
-
->>>>>>> f4670ef5dba3826baff9a80f30bf67ce1fc932db
     return str(resp)
 
 def getTimeFromGoogle(origin='43.659624,-79.39849007'):
