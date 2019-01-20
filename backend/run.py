@@ -36,19 +36,19 @@ def sms_ahoy_reply():
     body = request.args.get('Body')
     body=body.split()
     longLat = body[-1]
-    if 'Take me to' in body:
+    if 'take' in body:
       #route api to find directions
       #eg. Take me to Eaton Center from 43.659624,-79.39849007
       dest=body[3:len(body)-2]
       destination="+".join(dest)
       resp.message(getRespfromGoogle(origin=longLat,destination=destination))
-    elif 'where am' in  body:
+    elif 'where' in body:
       #geocoding api
       resp.message(getLocation(origin=longLat))
     elif "weather" in body:
       #weather api
       resp.message("It's currently -15C.")
-    elif 'time in body':
+    elif 'time' in body:
       #timezone api
       resp.message("It's current 3:43pm")
     
