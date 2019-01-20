@@ -1,46 +1,27 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\melwa\\Documents\\android-fundamentals-phone-sms\\SmsMessaging\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "C:\\Users\\melwa\\Documents\\directions-sms\\SmsMessaging\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\melwa\\Documents\\android-fundamentals-phone-sms\\SmsMessaging\\app\\src\\main\\res\\values\\strings.xml",
+                    "source": "C:\\Users\\melwa\\Documents\\directions-sms\\SmsMessaging\\app\\src\\main\\res\\values\\dimens.xml",
                     "from": {
-                        "startLines": "15,28,24,31,17,25,35,21,29,20,23,32,18,22,33,19,30,16,34,26,27",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "593,1371,1081,1522,684,1148,1759,907,1410,862,1005,1589,746,946,1657,805,1463,645,1698,1226,1294",
-                        "endColumns": "50,37,65,65,60,76,65,37,51,43,74,66,57,57,39,55,57,37,59,66,75",
-                        "endOffsets": "639,1404,1142,1583,740,1220,1820,940,1457,901,1075,1651,799,999,1692,856,1516,678,1753,1288,1365"
+                        "startLines": "16,17,18,19",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "666,725,782,828",
+                        "endColumns": "57,55,44,46",
+                        "endOffsets": "719,776,822,870"
                     },
                     "to": {
-                        "startLines": "353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,370,371,372,374,375",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "34795,34846,34884,34950,35016,35077,35154,35220,35258,35310,35354,35429,35496,35554,35612,35652,35761,35819,35857,35988,36055",
-                        "endColumns": "50,37,65,65,60,76,65,37,51,43,74,66,57,57,39,55,57,37,59,66,75",
-                        "endOffsets": "34841,34879,34945,35011,35072,35149,35215,35253,35305,35349,35424,35491,35549,35607,35647,35703,35814,35852,35912,36050,36126"
+                        "startLines": "279,280,281,284",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "29772,29830,29886,30104",
+                        "endColumns": "57,55,44,46",
+                        "endOffsets": "29825,29881,29926,30146"
                     }
                 },
                 {
-                    "source": "C:\\Users\\melwa\\Documents\\android-fundamentals-phone-sms\\SmsMessaging\\app\\src\\main\\res\\values\\styles.xml",
-                    "from": {
-                        "startLines": "17",
-                        "startColumns": "4",
-                        "startOffsets": "633",
-                        "endLines": "21",
-                        "endColumns": "12",
-                        "endOffsets": "907"
-                    },
-                    "to": {
-                        "startLines": "380",
-                        "startColumns": "4",
-                        "startOffsets": "36483",
-                        "endLines": "384",
-                        "endColumns": "12",
-                        "endOffsets": "36753"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\melwa\\Documents\\android-fundamentals-phone-sms\\SmsMessaging\\app\\src\\main\\res\\values\\colors.xml",
+                    "source": "C:\\Users\\melwa\\Documents\\directions-sms\\SmsMessaging\\app\\src\\main\\res\\values\\colors.xml",
                     "from": {
                         "startLines": "18,16,17",
                         "startColumns": "4,4,4",
@@ -57,20 +38,39 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\melwa\\Documents\\android-fundamentals-phone-sms\\SmsMessaging\\app\\src\\main\\res\\values\\dimens.xml",
+                    "source": "C:\\Users\\melwa\\Documents\\directions-sms\\SmsMessaging\\app\\src\\main\\res\\values\\strings.xml",
                     "from": {
-                        "startLines": "16,17,18,19",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "666,725,782,828",
-                        "endColumns": "57,55,44,46",
-                        "endOffsets": "719,776,822,870"
+                        "startLines": "15,28,24,31,17,25,35,21,29,20,23,32,18,22,33,19,30,16,34,26,27",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "593,1371,1081,1522,684,1148,1759,907,1410,862,1005,1589,746,946,1657,805,1463,645,1698,1226,1294",
+                        "endColumns": "50,37,65,65,60,76,65,37,51,43,74,66,57,57,39,55,57,37,59,66,75",
+                        "endOffsets": "639,1404,1142,1583,740,1220,1820,940,1457,901,1075,1651,799,999,1692,856,1516,678,1753,1288,1365"
                     },
                     "to": {
-                        "startLines": "279,280,281,284",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "29772,29830,29886,30104",
-                        "endColumns": "57,55,44,46",
-                        "endOffsets": "29825,29881,29926,30146"
+                        "startLines": "353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,370,371,372,374,375",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "34795,34846,34884,34950,35016,35077,35154,35220,35258,35310,35354,35429,35496,35554,35612,35652,35761,35819,35857,35988,36055",
+                        "endColumns": "50,37,65,65,60,76,65,37,51,43,74,66,57,57,39,55,57,37,59,66,75",
+                        "endOffsets": "34841,34879,34945,35011,35072,35149,35215,35253,35305,35349,35424,35491,35549,35607,35647,35703,35814,35852,35912,36050,36126"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\melwa\\Documents\\directions-sms\\SmsMessaging\\app\\src\\main\\res\\values\\styles.xml",
+                    "from": {
+                        "startLines": "17",
+                        "startColumns": "4",
+                        "startOffsets": "633",
+                        "endLines": "21",
+                        "endColumns": "12",
+                        "endOffsets": "907"
+                    },
+                    "to": {
+                        "startLines": "380",
+                        "startColumns": "4",
+                        "startOffsets": "36483",
+                        "endLines": "384",
+                        "endColumns": "12",
+                        "endOffsets": "36753"
                     }
                 },
                 {

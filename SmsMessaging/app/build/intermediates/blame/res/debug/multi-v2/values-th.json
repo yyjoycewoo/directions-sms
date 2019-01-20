@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\melwa\\Documents\\android-fundamentals-phone-sms\\SmsMessaging\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-th\\values-th.xml",
+            "outputFile": "C:\\Users\\melwa\\Documents\\directions-sms\\SmsMessaging\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-th\\values-th.xml",
             "map": [
                 {
                     "source": "C:\\Users\\melwa\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-25.2.0.aar\\32afa5d975229f6d5ba8fd02ff3a5a72\\res\\values-th\\values-th.xml",
