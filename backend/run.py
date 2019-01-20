@@ -11,10 +11,11 @@ import os
 # Your Account Sid and Auth Token from twilio.com/console
 account_sid = os.environ['TWILIOASID']
 auth_token = os.environ['TWILIOATOKEN']
+twilnumber = os.environ['NUMBER']
 client = Client(account_sid, auth_token)
 
-
 app = Flask(__name__)
+
 gKey = os.environ['GMAPTOKEN'] #google api key
 #HTML Stripper
 class MLStripper(HTMLParser):
@@ -33,85 +34,68 @@ def strip_tags(html):
     return s.get_data()
 
 #Routes
+#DEFAULT TWILIO, 1600 char limit
 @app.route("/sms", methods=['GET', 'POST'])
-def sms_ahoy_reply():
-    return sms_ahoy_reply()
-
-# 1600 char limit
-def sms_ahoy_reply():
+def reply_twilio():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
+    resp = MessagingResponse()
+    body = request.args.get('Body').split()
 
-    # Add a message
-    body = request.args.get('Body')
-    body=body.split()
-    number=body[0]
-    longLat = body[-1]
-    dest=body[3:len(body)-2]
-    destination="+".join(dest)
+    resp.message(get_reply(body))
+    return str(resp)
 
+def getWeather(origin='43.659624,-79.39849007'):
+    key = "0864784f871251ec16fe836de0ea3352"
+    url = "https://api.darksky.net/forecast/"+key+"/"+origin
+    resp = requests.get(url)
+    temp = resp.json()
+    fehrenheit = temp["currently"]["temperature"]
+    celcius = int((fehrenheit - 32) * (5/9))
 
-    message = client.messages \
-                    .create(
-                         body=body[1:],
-                         from_='+17053006844',
-                         to=number
-                     )
-    return
-
+    msg = "The temperature is " + str(celcius) + " celcius. "
+    msg += temp["hourly"]["summary"]
+    return msg
 
 @app.route("/stdlib", methods=['POST'])
 def sms_stdlib():
     """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-
-    # Add a message
     body = request.json
-    incoming = body['msg'];
-    reply=""
-    if incoming=="Get me directions":
-        reply=getRespfromGoogle()
-    # extra if conditions
+    incoming = body['msg']
+    reply = get_reply(incoming)
+    
     message = client.messages \
                     .create(
                          body=reply,
-                         from_='+17053006844',
+                         from_=twilnumber,
                          to=body['number']
                      )
     return 'done'
 
-def sms_direction_reply():
-    """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-    resp = MessagingResponse()
-
-    # Add a message
-    body = request.args.get('Body')
-    body = body.split()
+def get_reply(body):
+    message = ''
+    
     longLat = body[-1]
     if 'take' in body:
       #route api to find directions
-      #eg. Take me to Eaton Center from 43.659624,-79.39849007
       dest=body[3:len(body)-2]
       destination="+".join(dest)
-      resp.message(getRespfromGoogle(origin=longLat,destination=destination))
-    elif 'where' in body:
+      message = getRespfromGoogle(longLat, destination)
+    if 'where' in body:
       #geocoding api
-      resp.message(getLocation(origin=longLat))
+      message = getLocation(longLat)
     elif "weather" in body:
       #weather api
-      resp.message("It's currently -15C.")
+      message = getWeather()
     elif 'time' in body:
       #timezone api
-<<<<<<< HEAD
-      #eg. What time is it in 43.659624,-79.39849007
-      resp.message(getTimeFromGoogle(origin=longLat))
-    
-=======
-      resp.message("It's current 3:43pm")
+      message = getTimeFromGoogle(longLat)
+    elif 'best' in body:
+      message = "SMS Assistant is the best app."
+    else:
+      message = "Sorry, command not supported."
 
->>>>>>> f4670ef5dba3826baff9a80f30bf67ce1fc932db
-    return str(resp)
+    return message
 
 def getTimeFromGoogle(origin='43.659624,-79.39849007'):
   url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+origin
