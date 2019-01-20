@@ -1,10 +1,21 @@
 from flask import Flask, request
 from html.parser import HTMLParser
-import requests, os, asyncio
+import requests, os, asyncio, time, pytz
+from datetime import datetime
+
 from twilio.twiml.messaging_response import MessagingResponse
 
+from twilio.rest import Client
+import os
+
+# Your Account Sid and Auth Token from twilio.com/console
+account_sid = os.environ['TWILIOASID']
+auth_token = os.environ['TWILIOATOKEN']
+client = Client(account_sid, auth_token)
+
+
 app = Flask(__name__)
-gKey = "AIzaSyD1jYzlx7cfOlWWqNhu8MMFuv-IfF2QDI0" #google api key
+gKey = os.environ['GMAPTOKEN'] #google api key
 #HTML Stripper
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -23,36 +34,105 @@ def strip_tags(html):
 
 #Routes
 @app.route("/sms", methods=['GET', 'POST'])
-def run_after_GET():
+def sms_ahoy_reply():
     return sms_ahoy_reply()
 
 # 1600 char limit
 def sms_ahoy_reply():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
-    resp = MessagingResponse()
 
     # Add a message
     body = request.args.get('Body')
     body=body.split()
+    number=body[0]
     longLat = body[-1]
-    if 'Take me to' in body:
+    dest=body[3:len(body)-2]
+    destination="+".join(dest)
+
+
+    message = client.messages \
+                    .create(
+                         body=body[1:],
+                         from_='+17053006844',
+                         to=number
+                     )
+    return
+
+
+@app.route("/stdlib", methods=['POST'])
+def sms_stdlib():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
+
+    # Add a message
+    body = request.json
+    incoming = body['msg'];
+    reply=""
+    if incoming=="Get me directions":
+        reply=getRespfromGoogle()
+    # extra if conditions
+    message = client.messages \
+                    .create(
+                         body=reply,
+                         from_='+17053006844',
+                         to=body['number']
+                     )
+    return 'done'
+
+def sms_direction_reply():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
+    resp = MessagingResponse()
+
+    # Add a message
+    body = request.args.get('Body')
+    body = body.split()
+    longLat = body[-1]
+    if 'take' in body:
       #route api to find directions
       #eg. Take me to Eaton Center from 43.659624,-79.39849007
       dest=body[3:len(body)-2]
       destination="+".join(dest)
       resp.message(getRespfromGoogle(origin=longLat,destination=destination))
-    elif 'where am' in  body:
+    elif 'where' in body:
       #geocoding api
       resp.message(getLocation(origin=longLat))
     elif "weather" in body:
       #weather api
       resp.message("It's currently -15C.")
-    elif 'time in body':
+    elif 'time' in body:
       #timezone api
-      resp.message("It's current 3:43pm")
+<<<<<<< HEAD
+      #eg. What time is it in 43.659624,-79.39849007
+      resp.message(getTimeFromGoogle(origin=longLat))
     
+=======
+      resp.message("It's current 3:43pm")
+
+>>>>>>> f4670ef5dba3826baff9a80f30bf67ce1fc932db
     return str(resp)
+
+def getTimeFromGoogle(origin='43.659624,-79.39849007'):
+  url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+origin
+  #38.908133,-77.047119
+  url += '&timestamp=' + str(round(time.time()))
+  url += '&key='+gKey
+  req = requests.get(url)
+  if req.status_code!=200: #if response was unsucessful
+    return ["error"]
+
+  timeJson = req.json()
+
+  ret = "You are in " + timeJson['timeZoneName'] + ". It is now "
+  tz = datetime.now(pytz.timezone(timeJson['timeZoneId']))
+  time_now = tz.time()
+  date_now = tz.date()
+  ret += str(time_now.hour) + ':' + str(time_now.minute)
+  ret += " on "
+  ret += str(date_now)
+
+  return ret
 
 def getRespfromGoogle(origin = "bahen+uoft", destination = "hart+house", travelType = "walking"):
     #Using Google maps API to retreive directions from origin to destination
@@ -104,4 +184,3 @@ def getLocation (origin = "40.714224,-73.961452"):
     city = cityUncleaned[8:]
     message = "You are currently in " + city
     return message
-
