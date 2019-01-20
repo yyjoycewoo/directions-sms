@@ -5,8 +5,17 @@ from datetime import datetime
 
 from twilio.twiml.messaging_response import MessagingResponse
 
+from twilio.rest import Client
+import os
+
+# Your Account Sid and Auth Token from twilio.com/console
+account_sid = os.environ['TWILIOASID']
+auth_token = os.environ['TWILIOATOKEN']
+client = Client(account_sid, auth_token)
+
+
 app = Flask(__name__)
-gKey = "AIzaSyD1jYzlx7cfOlWWqNhu8MMFuv-IfF2QDI0" #google api key
+gKey = os.environ['GMAPTOKEN'] #google api key
 #HTML Stripper
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -32,6 +41,48 @@ def sms_ahoy_reply():
 def sms_ahoy_reply():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
+
+    # Add a message
+    body = request.args.get('Body')
+    body=body.split()
+    number=body[0]
+    longLat = body[-1]
+    dest=body[3:len(body)-2]
+    destination="+".join(dest)
+
+
+    message = client.messages \
+                    .create(
+                         body=body[1:],
+                         from_='+17053006844',
+                         to=number
+                     )
+    return
+
+
+@app.route("/stdlib", methods=['POST'])
+def sms_stdlib():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
+
+    # Add a message
+    body = request.json
+    incoming = body['msg'];
+    reply=""
+    if incoming=="Get me directions":
+        reply=getRespfromGoogle()
+    # extra if conditions
+    message = client.messages \
+                    .create(
+                         body=reply,
+                         from_='+17053006844',
+                         to=body['number']
+                     )
+    return 'done'
+
+def sms_direction_reply():
+    """Respond to incoming messages with a friendly SMS."""
+    # Start our response
     resp = MessagingResponse()
 
     # Add a message
@@ -52,9 +103,14 @@ def sms_ahoy_reply():
       resp.message("It's currently -15C.")
     elif 'time' in body:
       #timezone api
+<<<<<<< HEAD
       #eg. What time is it in 43.659624,-79.39849007
       resp.message(getTimeFromGoogle(origin=longLat))
     
+=======
+      resp.message("It's current 3:43pm")
+
+>>>>>>> f4670ef5dba3826baff9a80f30bf67ce1fc932db
     return str(resp)
 
 def getTimeFromGoogle(origin='43.659624,-79.39849007'):
@@ -128,4 +184,3 @@ def getLocation (origin = "40.714224,-73.961452"):
     city = cityUncleaned[8:]
     message = "You are currently in " + city
     return message
-
