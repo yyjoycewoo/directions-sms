@@ -36,33 +36,14 @@ def strip_tags(html):
 #Routes
 #DEFAULT TWILIO, 1600 char limit
 @app.route("/sms", methods=['GET', 'POST'])
-def sms_direction_reply():
+def reply_twilio():
     """Respond to incoming messages with a friendly SMS."""
     # Start our response
     resp = MessagingResponse()
+    body = request.args.get('Body').split()
 
-    # Add a message
-    body = request.args.get('Body')
-    body = body.split()
-    longLat = body[-1]
-    if 'take' in body:
-      #route api to find directions
-      #eg. Take me to Eaton Center from 43.659624,-79.39849007
-      dest=body[3:len(body)-2]
-      destination="+".join(dest)
-      resp.message(getRespfromGoogle(longLat, destination))
-    elif 'where' in body:
-      #geocoding api
-      resp.message(getLocation(longLat))
-    elif "weather" in body:
-      #weather api
-      resp.message(getWeather())
-    elif 'time' in body:
-      #timezone api
-      #eg. What time is it in 43.659624,-79.39849007
-      resp.message(getTimeFromGoogle(longLat))
+    resp.message(get_reply(body))
     return str(resp)
-
 
 def getWeather(origin='43.659624,-79.39849007'):
     key = "0864784f871251ec16fe836de0ea3352"
@@ -79,15 +60,10 @@ def getWeather(origin='43.659624,-79.39849007'):
 @app.route("/stdlib", methods=['POST'])
 def sms_stdlib():
     """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-
-    # Add a message
     body = request.json
-    incoming = body['msg'];
-    reply=""
-    if incoming=="Get me directions":
-        reply=getRespfromGoogle()
-    # extra if conditions
+    incoming = body['msg']
+    reply = get_reply(incoming)
+    
     message = client.messages \
                     .create(
                          body=reply,
@@ -96,6 +72,30 @@ def sms_stdlib():
                      )
     return 'done'
 
+def get_reply(body):
+    message = ''
+    
+    longLat = body[-1]
+    if 'take' in body:
+      #route api to find directions
+      dest=body[3:len(body)-2]
+      destination="+".join(dest)
+      message = getRespfromGoogle(longLat, destination)
+    if 'where' in body:
+      #geocoding api
+      message = getLocation(longLat)
+    elif "weather" in body:
+      #weather api
+      message = getWeather()
+    elif 'time' in body:
+      #timezone api
+      message = getTimeFromGoogle(longLat)
+    elif 'best' in body:
+      message = "SMS Assistant is the best app."
+    else:
+      message = "Sorry, command not supported."
+
+    return message
 
 def getTimeFromGoogle(origin='43.659624,-79.39849007'):
   url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+origin
