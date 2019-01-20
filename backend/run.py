@@ -34,7 +34,7 @@ def strip_tags(html):
     return s.get_data()
 
 #Routes
-#DEFAULT TWILIO
+#DEFAULT TWILIO, 1600 char limit
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_direction_reply():
     """Respond to incoming messages with a friendly SMS."""
@@ -50,38 +50,31 @@ def sms_direction_reply():
       #eg. Take me to Eaton Center from 43.659624,-79.39849007
       dest=body[3:len(body)-2]
       destination="+".join(dest)
-      resp.message(getRespfromGoogle(origin=longLat,destination=destination))
+      resp.message(getRespfromGoogle(longLat, destination))
     elif 'where' in body:
       #geocoding api
-      resp.message(getLocation(origin=longLat))
+      resp.message(getLocation(longLat))
     elif "weather" in body:
       #weather api
-      weather = getWeather()
-      resp.message(weather)
-    elif 'time in body':
-      #timezone api
-      resp.message("It's current 3:43pm")
-      resp.message("It's currently -15C.")
+      resp.message(getWeather())
     elif 'time' in body:
       #timezone api
       #eg. What time is it in 43.659624,-79.39849007
-      resp.message(getTimeFromGoogle(origin=longLat))
+      resp.message(getTimeFromGoogle(longLat))
     return str(resp)
-def getWeather():
+
+
+def getWeather(origin='43.659624,-79.39849007'):
     key = "0864784f871251ec16fe836de0ea3352"
-    longlat="43.6532,79.3832" #Toronto
+    url = "https://api.darksky.net/forecast/"+key+"/"+origin
+    resp = requests.get(url)
+    temp = resp.json()
+    fehrenheit = temp["currently"]["temperature"]
+    celcius = int((fehrenheit - 32) * (5/9))
 
-    sURL = "https://api.darksky.net/forecast/"+key+"/"+longlat
-    re = requests.get(sURL)
-    temp = re.json();
-    msg = "The temperature is " + str(temp["currently"]["temperature"]) + " Fahrenheit. \n"
-    msg+= temp["hourly"]["summary"]
-    resp.message(msg)
-
-
-
-# 1600 char limit
-
+    msg = "The temperature is " + str(celcius) + " celcius. "
+    msg += temp["hourly"]["summary"]
+    return msg
 
 @app.route("/stdlib", methods=['POST'])
 def sms_stdlib():
