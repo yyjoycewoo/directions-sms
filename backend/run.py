@@ -81,7 +81,7 @@ def get_reply(body):
       dest=body[3:len(body)-2]
       destination="+".join(dest)
       message = getRespfromGoogle(longLat, destination)
-    if 'where' in body:
+    elif 'where' in body:
       #geocoding api
       message = getLocation(longLat)
     elif "weather" in body:
