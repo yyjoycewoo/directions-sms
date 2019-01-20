@@ -34,9 +34,11 @@ def sms_ahoy_reply():
 
     # Add a message
     body = request.args.get('Body')
+    body=body.split()
+    longLat = body[-1]
     if 'Take me to' in body:
-      body=body.split()
-      longLat = body[-1]
+      #route api to find directions
+      #eg. Take me to Eaton Center from 43.659624,-79.39849007
       dest=body[3:len(body)-2]
       destination="+".join(dest)
       resp.message(getRespfromGoogle(origin=longLat,destination=destination))
