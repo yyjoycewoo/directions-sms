@@ -14,7 +14,6 @@ auth_token = os.environ['TWILIOATOKEN']
 twilnumber = os.environ['NUMBER']
 client = Client(account_sid, auth_token)
 
-
 app = Flask(__name__)
 
 gKey = os.environ['GMAPTOKEN'] #google api key
